@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "target": "ES2020",
+    "experimentalDecorators": true,
+    "module": "commonJS",
+    "lib": ["es2020", "dom"],
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@src/*": ["*"],
+      "@controller/*": ["controller/*"],
+      "@service/*": ["service/*"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts", ".git", "**/node_modules"]
+}

@@ -1,0 +1,51 @@
+service: serverless-scheduler
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  stage: ${opt:stage, 'dev'}
+  profile: my-profile
+  runtime: nodejs16.x
+  logRetentionInDays: 30
+
+plugins:
+  - "serverless-step-functions"
+  - "serverless-webpack"
+  - "serverless-iam-roles-per-function"
+custom:
+  webpack:
+    webpackConfig: "webpack.config.js"
+    includeModules:
+      forceExclude:
+        - aws-sdk
+    packager: "npm"
+    excludeFiles: .git
+
+functions:
+  scheduler:
+    name: ${self:provider.stage}-${self:service}-scheduler
+    handler: ./src/lambda/scheduler/index.handler
+    timeout: 5
+    memorySize: 128
+    architecture: arm64
+
+stepFunctions:
+  stateMachines:
+    serverlessScheduler:
+      name: serverlessScheduler
+      definition:
+        Comment: serverless scheduler
+        StartAt: firstState
+        States:
+          firstState:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: "$.Payload"
+            Parameters:
+              FunctionName:
+                Fn::GetAtt: [scheduler, Arn]
+              Payload:
+                body.$: "$"
+                context.$: "$$"
+            End: true
