@@ -38,7 +38,7 @@ stepFunctions:
         Comment: serverless scheduler
         StartAt: translateSchedule
         States:
-          translateSchedule:
+          TranslateSchedule:
             Type: Task
             Resource: arn:aws:states:::lambda:invoke
             OutputPath: '$.Payload'
@@ -59,7 +59,7 @@ stepFunctions:
             Branches:
               - StartAt: publishMessage
                 States:
-                  publishMessage:
+                  PublishMessage:
                     Type: Task
                     Resource: arn:aws:states:::lambda:invoke
                     OutputPath: '$.Payload'
