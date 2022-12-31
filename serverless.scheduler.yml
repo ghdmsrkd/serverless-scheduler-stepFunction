@@ -36,7 +36,7 @@ stepFunctions:
       name: serverlessScheduler
       definition:
         Comment: serverless scheduler
-        StartAt: translateSchedule
+        StartAt: TranslateSchedule
         States:
           TranslateSchedule:
             Type: Task
@@ -57,7 +57,7 @@ stepFunctions:
             Type: Parallel
             Next: isScheduleStop
             Branches:
-              - StartAt: publishMessage
+              - StartAt: PublishMessage
                 States:
                   PublishMessage:
                     Type: Task
@@ -91,6 +91,6 @@ stepFunctions:
               - Variable: '$.nextSchedule'
                 IsNull: true
                 Next: EndJob
-            Default: translateSchedule
+            Default: TranslateSchedule
           EndJob:
             Type: Succeed
