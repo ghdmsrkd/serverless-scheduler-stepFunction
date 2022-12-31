@@ -78,7 +78,7 @@ stepFunctions:
           isScheduleStop:
             Type: Choice
             Choices:
-              - Variable: '$.scheduledAt'
+              - Variable: '$.isScheduleStop'
                 IsNull: true
                 Next: EndJob
             Default: TranslateSchedule
