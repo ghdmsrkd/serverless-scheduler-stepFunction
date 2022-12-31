@@ -48,47 +48,37 @@ stepFunctions:
               Payload:
                 body.$: '$'
                 context.$: '$$'
-            Next: Wait
-          Wait:
+            Next: waitSchedule
+          waitSchedule:
             Type: Wait
-            Next: Parallel
-            TimestampPath: '$.schedule.timestamp'
-          Parallel:
-            Type: Parallel
+            Next: PublishMessage
+            TimestampPath: '$.scheduledAt'
+          PublishMessage:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: '$.Payload'
+            Parameters:
+              FunctionName:
+                Fn::GetAtt: [scheduler, Arn]
+              Payload:
+                body.$: '$'
+                context.$: '$$'
+            Next: GetScheduleStatus
+          GetScheduleStatus:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: '$.Payload'
+            Parameters:
+              FunctionName:
+                Fn::GetAtt: [scheduler, Arn]
+              Payload:
+                body.$: '$'
+                context.$: '$$'
             Next: isScheduleStop
-            Branches:
-              - StartAt: PublishMessage
-                States:
-                  PublishMessage:
-                    Type: Task
-                    Resource: arn:aws:states:::lambda:invoke
-                    OutputPath: '$.Payload'
-                    Parameters:
-                      FunctionName:
-                        Fn::GetAtt: [scheduler, Arn]
-                      Payload:
-                        body.$: '$'
-                        context.$: '$$'
-                    Next: publishSuccess
-                  publishSuccess:
-                    Type: Succeed
-              - StartAt: GetScheduleStatus
-                States:
-                  GetScheduleStatus:
-                    Type: Task
-                    Resource: arn:aws:states:::lambda:invoke
-                    OutputPath: '$.Payload'
-                    Parameters:
-                      FunctionName:
-                        Fn::GetAtt: [scheduler, Arn]
-                      Payload:
-                        body.$: '$'
-                        context.$: '$$'
-                    End: true
           isScheduleStop:
             Type: Choice
             Choices:
-              - Variable: '$.nextSchedule'
+              - Variable: '$.scheduledAt'
                 IsNull: true
                 Next: EndJob
             Default: TranslateSchedule
