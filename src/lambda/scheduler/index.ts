@@ -3,5 +3,16 @@ import { Handler } from 'aws-lambda';
 
 exports.handler = async (event: any, context: any, callback: any) => {
   console.log(event);
-  schedulerController;
+  const eventHandler = schedulerController.getEventHandler(
+    event.context.State.Name,
+  );
+
+  try {
+    const res = await eventHandler(event.body);
+    console.log(res);
+    return res;
+  } catch (e: any) {
+    console.error(e);
+    throw new Error(e);
+  }
 };

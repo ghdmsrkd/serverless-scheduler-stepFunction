@@ -1,5 +1,5 @@
 service: serverless-scheduler
-frameworkVersion: "3"
+frameworkVersion: '3'
 
 provider:
   name: aws
@@ -10,16 +10,16 @@ provider:
   logRetentionInDays: 30
 
 plugins:
-  - "serverless-step-functions"
-  - "serverless-webpack"
-  - "serverless-iam-roles-per-function"
+  - 'serverless-step-functions'
+  - 'serverless-webpack'
+  - 'serverless-iam-roles-per-function'
 custom:
   webpack:
-    webpackConfig: "webpack.config.js"
+    webpackConfig: 'webpack.config.js'
     includeModules:
       forceExclude:
         - aws-sdk
-    packager: "npm"
+    packager: 'npm'
     excludeFiles: .git
 
 functions:
@@ -36,16 +36,51 @@ stepFunctions:
       name: serverlessScheduler
       definition:
         Comment: serverless scheduler
-        StartAt: firstState
+        StartAt: TranslateSchedule
         States:
-          firstState:
+          TranslateSchedule:
             Type: Task
             Resource: arn:aws:states:::lambda:invoke
-            OutputPath: "$.Payload"
+            OutputPath: '$.Payload'
             Parameters:
               FunctionName:
                 Fn::GetAtt: [scheduler, Arn]
               Payload:
-                body.$: "$"
-                context.$: "$$"
-            End: true
+                body.$: '$'
+                context.$: '$$'
+            Next: waitSchedule
+          waitSchedule:
+            Type: Wait
+            Next: PublishMessage
+            TimestampPath: '$.scheduledAt'
+          PublishMessage:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: '$.Payload'
+            Parameters:
+              FunctionName:
+                Fn::GetAtt: [scheduler, Arn]
+              Payload:
+                body.$: '$'
+                context.$: '$$'
+            Next: GetScheduleStatus
+          GetScheduleStatus:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: '$.Payload'
+            Parameters:
+              FunctionName:
+                Fn::GetAtt: [scheduler, Arn]
+              Payload:
+                body.$: '$'
+                context.$: '$$'
+            Next: isScheduleStop
+          isScheduleStop:
+            Type: Choice
+            Choices:
+              - Variable: '$.isScheduleStop'
+                IsNull: true
+                Next: EndJob
+            Default: TranslateSchedule
+          EndJob:
+            Type: Succeed
