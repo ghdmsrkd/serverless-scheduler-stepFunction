@@ -1,0 +1,33 @@
+service: serverless-scheduler
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  stage: ${opt:stage, 'dev'}
+  profile: my-profile
+  runtime: nodejs16.x
+  logRetentionInDays: 30
+
+plugins:
+  - 'serverless-webpack'
+  - 'serverless-iam-roles-per-function'
+  - 'serverless-offline'
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules:
+      forceExclude:
+        - aws-sdk
+    packager: 'npm'
+    excludeFiles: .git
+
+functions:
+  api:
+    name: ${self:provider.stage}-${self:service}-api
+    handler: ./src/lambda/api/index.handler
+    timeout: 5
+    memorySize: 128
+    architecture: arm64
+    events:
+      - httpApi: '*'
