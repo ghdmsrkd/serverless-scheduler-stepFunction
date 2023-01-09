@@ -1,3 +1,5 @@
+import { scheduleRepository } from '@src/repository';
+
 export class SchedulerService {
   async publishMessage() {
     return true;
@@ -16,5 +18,9 @@ export class SchedulerService {
       isScheduleStop: null,
       scheduledAt: nextSchedule.toISOString(),
     };
+  }
+
+  async createSchedule() {
+    await scheduleRepository.createSchedule();
   }
 }

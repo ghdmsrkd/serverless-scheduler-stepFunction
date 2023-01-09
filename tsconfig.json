@@ -16,7 +16,8 @@
     "paths": {
       "@src/*": ["*"],
       "@controller/*": ["controller/*"],
-      "@service/*": ["service/*"]
+      "@service/*": ["service/*"],
+      "@repository/*": ["repository/*"]
     }
   },
   "include": ["**/*.ts"],
