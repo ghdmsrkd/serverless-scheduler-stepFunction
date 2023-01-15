@@ -1,16 +1,24 @@
-import { schedulerService } from '@src/service';
-import { Handler } from 'aws-lambda';
+import express, { NextFunction, Request, Response } from 'express';
+import serverless from 'serverless-http';
 
-exports.handler = async (event: any, context: any, callback: any) => {
-  console.log(JSON.stringify(event));
+const app = express();
 
-  try {
-    await schedulerService.createSchedule();
-    return {
-      status: 200,
-    };
-  } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
-  }
-};
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+  return res.status(200).json({
+    message: 'Hello from root!',
+  });
+});
+
+app.get('/hello', (req: Request, res: Response, next: NextFunction) => {
+  return res.status(200).json({
+    message: 'Hello from path!',
+  });
+});
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  return res.status(404).json({
+    error: 'Not Found',
+  });
+});
+
+module.exports.handler = serverless(app);
