@@ -29,7 +29,24 @@ functions:
     timeout: 5
     memorySize: 128
     architecture: arm64
-
+  dynamoStream:
+    name: ${self:provider.stage}-${self:service}-dynamoStream
+    handler: ./src/lambda/dynamoStream/index.handler
+    timeout: 5
+    memorySize: 128
+    architecture: arm64
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::Join:
+              - ':'
+              - - arn:aws:dynamodb
+                - Ref: AWS::Region
+                - Ref: AWS::AccountId
+                - table/Scheduler/stream/2023-01-15T13:50:01.958
+          filterPatterns:
+            - eventName: [INSERT]
 stepFunctions:
   stateMachines:
     serverlessScheduler:
