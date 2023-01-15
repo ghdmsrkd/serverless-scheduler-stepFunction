@@ -1,3 +1,4 @@
+import { scheduleRepository } from '@src/repository';
 import express, { NextFunction, Request, Response } from 'express';
 import serverless from 'serverless-http';
 
@@ -9,11 +10,15 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.get('/hello', (req: Request, res: Response, next: NextFunction) => {
-  return res.status(200).json({
-    message: 'Hello from path!',
-  });
-});
+app.post(
+  '/scheduler',
+  async (req: Request, res: Response, next: NextFunction) => {
+    await scheduleRepository.createScheduler();
+    return res.status(200).json({
+      message: 'Hello from path!',
+    });
+  },
+);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   return res.status(404).json({
