@@ -1,29 +1,15 @@
 import { Table, Entity } from 'dynamodb-toolbox';
-import DynamoDB from 'aws-sdk/clients/dynamodb';
+import { DocumentClient } from '@src/core.init';
 
-const DocumentClient = new DynamoDB.DocumentClient({
-  accessKeyId: 'AKIAWVJEQLD3VR3UECN6',
-  secretAccessKey: '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',
-  convertEmptyValues: false,
-});
-console.log(DocumentClient);
-
-// Instantiate a table
 const ScheduleTable = new Table({
-  // Specify table name (used by DynamoDB)
   name: 'Schedule',
-
   partitionKey: 'pk',
   sortKey: 'sk',
-
   DocumentClient,
 });
 
 const ScheduleEntity = new Entity({
-  // Specify entity name
   name: 'schedule',
-
-  // Define attributes
   attributes: {
     pk: { partitionKey: true },
     sk: { hidden: true, sortKey: true },
@@ -35,11 +21,7 @@ const ScheduleEntity = new Entity({
     scheduled_at: ['sk', 1],
     status: { type: 'string', default: 'stop' },
   },
-
-  // Assign it to our table
   table: ScheduleTable,
-
-  // In Typescript, the "as const" statement is needed for type inference
 } as const);
 
 export class ScheduleRepository {

@@ -8,6 +8,9 @@ provider:
   profile: my-profile
   runtime: nodejs16.x
   logRetentionInDays: 30
+  environment:
+    ACCESS_KEY: ${file(./config.${opt:stage, 'dev'}.json):accessKeyId}
+    SECRET_ACCESS_KEY: ${file(./config.${opt:stage, 'dev'}.json):secretAccessKey}
 
 plugins:
   - 'serverless-webpack'
