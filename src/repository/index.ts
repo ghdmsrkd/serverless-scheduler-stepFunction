@@ -1,4 +1,4 @@
-import { ScheduleRepository } from './schedule.repository';
+import { SchedulerRepository } from './scheduler.repository';
 
-const scheduleRepository = new ScheduleRepository();
+const scheduleRepository = new SchedulerRepository();
 export { scheduleRepository };

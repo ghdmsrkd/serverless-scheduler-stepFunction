@@ -1,15 +1,15 @@
 import { Table, Entity } from 'dynamodb-toolbox';
 import { DocumentClient } from '@src/core.init';
 
-const ScheduleTable = new Table({
-  name: 'Schedule',
+const SchedulerTable = new Table({
+  name: 'Scheduler',
   partitionKey: 'pk',
   sortKey: 'sk',
   DocumentClient,
 });
 
-const ScheduleEntity = new Entity({
-  name: 'schedule',
+const SchedulerEntity = new Entity({
+  name: 'scheduler',
   attributes: {
     pk: { partitionKey: true },
     sk: { hidden: true, sortKey: true },
@@ -17,20 +17,20 @@ const ScheduleEntity = new Entity({
     description: { type: 'string' },
     message: { type: 'string' },
     retry: { type: 'number' },
-    schedule_type: ['sk', 0],
+    scheduler_type: ['sk', 0],
     scheduled_at: ['sk', 1],
     status: { type: 'string', default: 'stop' },
   },
-  table: ScheduleTable,
+  table: SchedulerTable,
 } as const);
 
-export class ScheduleRepository {
+export class SchedulerRepository {
   private instance;
   constructor() {
-    this.instance = ScheduleEntity;
+    this.instance = SchedulerEntity;
   }
 
-  async createSchedule() {
+  async createScheduler() {
     try {
       const nowDate = new Date();
       const nextSchedule = new Date(
@@ -42,7 +42,7 @@ export class ScheduleRepository {
         description: '테스트 용도 스케쥴',
         message: '메시지',
         retry: 0,
-        schedule_type: 'timestamp',
+        scheduler_type: 'timestamp',
         scheduled_at: nextSchedule.toISOString(),
       };
       console.log(customer);

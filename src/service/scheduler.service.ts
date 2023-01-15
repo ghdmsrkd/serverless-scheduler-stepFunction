@@ -21,6 +21,6 @@ export class SchedulerService {
   }
 
   async createSchedule() {
-    await scheduleRepository.createSchedule();
+    await scheduleRepository.createScheduler();
   }
 }
